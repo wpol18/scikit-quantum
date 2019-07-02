@@ -55,3 +55,11 @@ html_static_path = ['_static']
 
 html_logo = 'logos/logo.png'
 
+html_sidebars = {
+        '**': [
+                 'localtoc.html',
+                 'relations.html',
+                 'searchbox.html',
+            ]
+
+        }
