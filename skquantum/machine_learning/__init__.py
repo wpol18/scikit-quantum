@@ -1,1 +1,1 @@
-from quantum_multilayer_perceptron import QuantumMultiLayerPerceptron
+from .quantum_multilayer_perceptron import QuantumMultiLayerPerceptron

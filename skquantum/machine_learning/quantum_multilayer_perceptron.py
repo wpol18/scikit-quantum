@@ -1,14 +1,12 @@
 import pennylane as qml
 import itertools
+import sklearn
+
 from pennylane import numpy as np
 from pennylane.optimize import AdamOptimizer
 
-n_features = 3
 
-dev = qml.device('strawberryfields.fock', wires=n_features, cutoff_dim=10)
-
-
-def layer(v):
+def layer(v, n_features=None):
     """ Single layer of the quantum neural net.
     Args:
         v (array[float]): array of variables for one layer
@@ -45,26 +43,6 @@ def layer(v):
         qml.Kerr(v[_get_and_increment()], wires=i)
 
 
-@qml.qnode(dev)
-def quantum_neural_net(var, x=None):
-    """The quantum neural net variational circuit.
-    Args:
-        var (array[float]): array of variables
-        x (array[float]): single input vector
-    Returns:
-        float: expectation of Homodyne measurement on Mode 0
-    """
-    # Encode input x into quantum state
-    for i in range(n_features):
-        qml.Displacement(x[i], 0., wires=i)
-
-    # "layer" subcircuits
-    for v in var:
-        layer(v)
-
-    return qml.expval.X(0)
-
-
 def square_loss(labels, predictions):
     """ Square loss function
     Args:
@@ -81,50 +59,76 @@ def square_loss(labels, predictions):
     return loss
 
 
-def cost(var, features, labels):
-    """Cost function to be minimized.
-    Args:
-        var (array[float]): array of variables
-        features (array[float]): 2-d array of input vectors
-        labels (array[float]): 1-d array of targets
-    Returns:
-        float: loss
-    """
-    # Compute prediction for each input in data batch
-    preds = [quantum_neural_net(var, x=x) for x in features]
+class QuantumMultiLayerPerceptron(sklearn.base.BaseEstimator):
+    def __init__(self, optimizer=None, iterations=400, num_layers=1):
+        # Hyper-parameters
+        self.optimizer = optimizer or AdamOptimizer(0.1, beta1=0.9, beta2=0.999)
+        self.iterations = iterations
+        self.num_layers = num_layers
 
-    return square_loss(labels, preds)
+        # Internal Variables
+        self._quantum_neural_net = None
+        self.n_features = None
+        self.var = None
 
 
-class QuantumMultiLayerPerceptron():
-    def __init__(self):
-        pass
+    def _cost(self, var, features, labels):
+        """Cost function to be minimized.
+        Args:
+            var (array[float]): array of variables
+            features (array[float]): 2-d array of input vectors
+            labels (array[float]): 1-d array of targets
+        Returns:
+            float: loss
+        """
+        preds = [self._quantum_neural_net(var, x=x) for x in features]
+
+        return square_loss(labels, preds)
+
 
     def predict(self, X):
-        preds = [quantum_neural_net(var, x=x) for x in X]
-        for i in range(len(preds)):
-            print("X: {0} | Predicted: {1} | Label: {2}".format(X[i], preds[i], Y[i]))
+        preds = [self._quantum_neural_net(self.var, x=x) for x in X]
+        return preds
+
 
     def fit(self, X, Y):
-        # X = [[0,0, 0],[1,0, 0],[0,1, 0],[1,1, 0]]
-        # Y = [0,1,1,0]
+        self.n_features = len(X[0])
+        self.dev = qml.device('strawberryfields.fock', wires=self.n_features, cutoff_dim=10)
 
-        # initialize weights
-        np.random.seed(0)
-        num_layers = 1
+        @qml.qnode(self.dev)
+        def _quantum_neural_net(var, x=None):
+            """The quantum neural net variational circuit.
+            Args:
+                var (array[float]): array of variables
+                x (array[float]): single input vector
+            Returns:
+                float: expectation of Homodyne measurement on Mode 0
+            """
+
+            # Encode input x into quantum state
+            for i in range(self.n_features):
+                qml.Displacement(x[i], 0., wires=i)
+
+            # "layer" subcircuits
+            for v in var:
+                layer(v, n_features=self.n_features)
+
+            return qml.expval.X(0)
+
+        self._quantum_neural_net = _quantum_neural_net
 
         # Each hidden node in each layer is paramterized by 7 variables in order.
         # We optimize these paramaters opt.step(cost_function, variables)
         # We can't increase the number of hidden nodes per layer because we would need more qumodes.
-        var_init = 0.05 * np.random.randn(num_layers, n_features*7)
+        var_init = 0.05 * np.random.randn(self.num_layers, self.n_features*7)
 
         # create optimizer
-        opt = AdamOptimizer(0.1, beta1=0.9, beta2=0.999)
+        opt = self.optimizer
 
         # train
-        var = var_init
-        iterations = 400
+        self.var = var_init
+        iterations = self.iterations
         for it in range(iterations):
-            var = opt.step(lambda v: cost(v, X, Y), var)
+            self.var = opt.step(lambda v: self._cost(v, X, Y), self.var)
             if it:
-                print("{:0.2f}% Iter: {:5d} | Cost: {:0.7f} ".format(((it+1)/iterations)*100, it + 1, cost(var, X, Y)))
+                print("{:0.2f}% Iter: {:5d} | Cost: {:0.7f} ".format(((it+1)/iterations)*100, it + 1, self._cost(self.var, X, Y)))
