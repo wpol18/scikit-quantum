@@ -1,11 +1,3 @@
-"""Continuous-variable quantum neural network example.
-In this demo we implement the photonic quantum neural net model
-from Killoran et al. (arXiv:1806.06871) with the example
-of function fitting.
-
-Adapted from https://github.com/XanaduAI/pennylane/blob/8c54d5c16d8a455a757655ced84d4178da866097/examples/CV2_quantum-neural-net.py
-"""
-
 import pennylane as qml
 import itertools
 from pennylane import numpy as np
@@ -105,15 +97,15 @@ def cost(var, features, labels):
 
 
 class QuantumMultiLayerPerceptron():
-    def __init__():
+    def __init__(self):
         pass
 
-    def predict(X):
+    def predict(self, X):
         preds = [quantum_neural_net(var, x=x) for x in X]
         for i in range(len(preds)):
             print("X: {0} | Predicted: {1} | Label: {2}".format(X[i], preds[i], Y[i]))
 
-    def fit(X, Y):
+    def fit(self, X, Y):
         # X = [[0,0, 0],[1,0, 0],[0,1, 0],[1,1, 0]]
         # Y = [0,1,1,0]
 
