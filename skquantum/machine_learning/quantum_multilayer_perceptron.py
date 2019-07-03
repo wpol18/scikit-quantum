@@ -1,11 +1,9 @@
 import pennylane as qml
 import itertools
+import sklearn
+
 from pennylane import numpy as np
 from pennylane.optimize import AdamOptimizer
-
-n_features = 3
-
-dev = qml.device('strawberryfields.fock', wires=n_features, cutoff_dim=10)
 
 
 def layer(v):
@@ -45,26 +43,6 @@ def layer(v):
         qml.Kerr(v[_get_and_increment()], wires=i)
 
 
-@qml.qnode(dev)
-def quantum_neural_net(var, x=None):
-    """The quantum neural net variational circuit.
-    Args:
-        var (array[float]): array of variables
-        x (array[float]): single input vector
-    Returns:
-        float: expectation of Homodyne measurement on Mode 0
-    """
-    # Encode input x into quantum state
-    for i in range(n_features):
-        qml.Displacement(x[i], 0., wires=i)
-
-    # "layer" subcircuits
-    for v in var:
-        layer(v)
-
-    return qml.expval.X(0)
-
-
 def square_loss(labels, predictions):
     """ Square loss function
     Args:
@@ -96,18 +74,37 @@ def cost(var, features, labels):
     return square_loss(labels, preds)
 
 
-class QuantumMultiLayerPerceptron():
+class QuantumMultiLayerPerceptron(sklearn.base.BaseEstimator):
     def __init__(self):
         pass
 
+    @qml.qnode(self.dev)
+    def _quantum_neural_net(var, x=None):
+        """The quantum neural net variational circuit.
+        Args:
+            var (array[float]): array of variables
+            x (array[float]): single input vector
+        Returns:
+            float: expectation of Homodyne measurement on Mode 0
+        """
+        # Encode input x into quantum state
+        for i in range(n_features):
+            qml.Displacement(x[i], 0., wires=i)
+
+        # "layer" subcircuits
+        for v in var:
+            layer(v)
+
+        return qml.expval.X(0)
+
     def predict(self, X):
-        preds = [quantum_neural_net(var, x=x) for x in X]
+        preds = [self._quantum_neural_net(var, x=x) for x in X]
         for i in range(len(preds)):
             print("X: {0} | Predicted: {1} | Label: {2}".format(X[i], preds[i], Y[i]))
+        return preds
 
     def fit(self, X, Y):
-        # X = [[0,0, 0],[1,0, 0],[0,1, 0],[1,1, 0]]
-        # Y = [0,1,1,0]
+        self.dev = qml.device('strawberryfields.fock', wires=X.shape[1], cutoff_dim=10)
 
         # initialize weights
         np.random.seed(0)
