@@ -1,6 +1,6 @@
 New BSD License
 
-Copyright (c) 2007–2019 The scikit-learn developers.
+Copyright (c) 2019 The scikit-quantum developers.
 All rights reserved.
 
 
