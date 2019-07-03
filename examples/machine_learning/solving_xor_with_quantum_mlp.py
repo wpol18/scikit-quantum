@@ -4,8 +4,6 @@ Solve the XOR problem with a Quantum Multi-Layer Perceptron
 ================================================================
 This builds a basic multi-layer perceptron and trains it on a XOR problem.
 """
-import sys
-sys.path.append("/Users/mat/Documents/scikit-quantum")
 import numpy as np
 
 from skquantum.machine_learning import QuantumMultiLayerPerceptron
