@@ -4,6 +4,6 @@ scikit-quantum is a Python module for quantum computing and quantum machine lear
 
 # Buildng the Documentation
 
-We use GitHub pages; to compile the docs run
+We use GitHub pages to host our documentation. To compile the docs to the `docs` folder run:
 
 > make -f build_tools/build_docs/Makefile html
