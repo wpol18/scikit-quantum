@@ -1,3 +1,7 @@
+"""
+Code derived from the CV-variable quantum neural networks from Xanadu: https://arxiv.org/abs/1806.06871
+"""
+
 import pennylane as qml
 import itertools
 import sklearn
