@@ -1,0 +1,5 @@
+pennylane
+tensorflow==1.3
+strawberryfields
+pennylane-sf
+scikit-learn
