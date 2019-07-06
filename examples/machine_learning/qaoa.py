@@ -57,7 +57,7 @@ def generate_random_unitary():
 
 
 @qml.qnode(dev)
-def _qaoa_circuit(var, betas, gammas):
+def qaoa(var):
     # Initialize circuit such that all solutions are equally likely.
     for i in range(n_features):
         qml.Hadamard(wires=i)
@@ -99,4 +99,4 @@ def _qaoa_circuit(var, betas, gammas):
 
     return qml.expval.PauliX(0)
 
-print(_qaoa_circuit(var, [], []))
+print(qaoa(var))
