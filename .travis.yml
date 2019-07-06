@@ -1,4 +1,6 @@
-script: pytest
+script:
+  python setup.py install
+  pytest
 language: python
 deploy:
   provider: pypi
