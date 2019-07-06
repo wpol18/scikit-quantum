@@ -13,7 +13,7 @@ n_features = 2
 num_layers = 1
 var = 0.05 * np.random.randn(num_layers, n_features*7)
 
-dev = qml.device('default.qubit', wires=n_features)
+dev = qml.device('projectq.simulator', wires=n_features)
 
 
 import numpy as np
@@ -76,7 +76,9 @@ def qaoa(var):
     # A hermitian must be exponentiated to be a unitary. Unitaries are quantum gates.
 
     H0, H1 = hamiltonian()
-    graph = nx.gnp_random_graph(4, 0.5)
+
+    # The number of nodes in the graph must equal the number of qubits
+    graph = nx.gnp_random_graph(n_features, 0.5)
     H1 = graph_cuts(graph)
 
     J = np.array([[0,1],[0,0]])
@@ -97,6 +99,7 @@ def qaoa(var):
         for i in range(n_features):
             qml.QubitUnitary(np.e**H1, wires=[i])
 
+    print("saddas")
     return qml.expval.PauliX(0)
 
 print(qaoa(var))
