@@ -3,11 +3,3 @@ script:
 - python setup.py install
 - pytest
 language: python
-deploy:
-  provider: pypi
-  twine_version: 1.12.1
-  user: "MatKallada"
-  password:
-    secure: "JUaMRqJ2C04JDoOIO2WanRn5+YS0WDi9JJdELnr3URYDgrFUKSzZMi3nT/canlssHxYO5T25vNLCNxkAryby6IG+2NLscLuXIUE4+5HTB7G6PiJg36RXIb2o1Tbfl1FSsz5xcvNOoW4kMp84MljpVq9s8oHf64EFRkgTVrdm/Zffw+8lI8vcHyI2adpq0CV0TWk8jBGlpKlwwpLXhj9zcoECtF2l2JW0PgCgprXVYxz2TMmzKS5or4LbhwVp3ic9rAZ06ISAieZkQ9tiHvowNA9gOBgEHqzIXlnEKORqZlZVFLF11lkteFMhxLDvZs2K3igoHz54vQiB1FE5qUR7jDWbFfPJaC9lC7gALAIzRHtM2mf36BvZJfRXSbOTDbw3gFiXvQPgN2z2lqS/98IINUJmaUw1UqTYJiX1ucBMydWDZjUDTSoElpN6XpAaikZ+g3iQiKWQqsad/mRX3DqHqA5UIjODvaVZzZnkLRPDfZ4o34NpR3nXkJ8wE349O5KgmBo5i/40cAZKR7aRaU4TCDGBQ733z0SEJC8SPwiWL0uDywf16uNAHa2NO/Kx/OT/cZCA4FpwXiiDrSvlhSWiP4uVD4UITfPmDntNnvofUpKTy21uHJJRqJiCQiO2bH9DWN9wtPpEF2yf7z2CkxuVjW7z63KNj9tHPPSPfkX2Oyo="
-  on:
-    branch: master
