@@ -1,3 +1,4 @@
+script: pytest
 language: python
 deploy:
   provider: pypi
