@@ -20,7 +20,7 @@ import numpy as np
 
 def graph_cuts(graph: nx.Graph) -> np.ndarray:
     """For the given graph, return the cut value for all binary assignments
-    of the graph.
+    of the graph. Taken from QuantumFlow
     """
 
     N = len(graph)
@@ -35,13 +35,12 @@ def graph_cuts(graph: nx.Graph) -> np.ndarray:
 
 
 def hamiltonian(omega=1.0, ampl0=0.2):
-    """Two-level-system Hamiltonian
+    """A basic two-level-system Hamiltonian for QAOA
 
     Args:
         omega (float): energy separation of the qubit levels
         ampl0 (float): constant amplitude of the driving field
     """
-    # .full() converts everything to numpy arrays
     H0 = -0.5 * omega * np.array([[-1, 0], [0, 1]], dtype=np.complex128)
     H1 = np.array([[0, 1], [1, 0]], dtype=np.complex128)
 
@@ -49,6 +48,12 @@ def hamiltonian(omega=1.0, ampl0=0.2):
 
 print(hamiltonian())
 
+
+def generate_random_unitary():
+    random_U = unitary_group.rvs(n_features) # random_U = unitary_group.rvs(2**n_features)
+    # Normalize to form unitary
+    random_U = random_U / (np.linalg.det(random_U) ** (1/(2**n_features)))
+    return random_U
 
 
 @qml.qnode(dev)
@@ -64,11 +69,7 @@ def _qaoa_circuit(var, betas, gammas):
     # it slow enough.
     # For the theorem to hold, there must be an energy gap between the ground state and the first excited state.
 
-    # for g,b in zip(betas, gammas):
-    # random_U = unitary_group.rvs(n_features) # random_U = unitary_group.rvs(2**n_features)
-    # # Normalize to form unitary
-    # random_U = random_U / (np.linalg.det(random_U) ** (1/(2**n_features)))
-
+ 
     # expp = np.exp(random_U) / np.exp((np.linalg.det(random_U) ** (1/(2**n_features))))
 
     # The hamiltonian a hermitian operator. It is not a quantum gate.
@@ -91,7 +92,6 @@ def _qaoa_circuit(var, betas, gammas):
                 # We to hit the quantum state with the product of the exponential of the Hamiltonian Cost
                 if i!=j:
                     qml.QubitUnitary(np.e**H0, wires=[i, j])
-
 
         # Run Mixer Hamiltonian
         for i in range(n_features):
