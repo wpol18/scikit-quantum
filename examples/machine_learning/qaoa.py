@@ -5,9 +5,11 @@ Solve the QAOA with gradient descent
 Builds a basic QAOA with PennyLane
 """
 import pennylane as qml
+import random
 from pennylane import numpy as np
 from scipy.stats import unitary_group
 import networkx as nx
+from pennylane.optimize import GradientDescentOptimizer
 
 n_features = 4
 num_layers = 1
@@ -83,8 +85,6 @@ def qaoa(var):
     # The number of nodes in the graph must equal the number of qubits
     # graph = nx.gnp_random_graph(n_features, 0.5)
 
-    import random 
-
     graph = nx.Graph()
     for i in range(n_features):
         for j in range(n_features):
@@ -98,17 +98,14 @@ def qaoa(var):
 
     ddd = generate_random_unitary()
 
-    import pdb; pdb.set_trace()
-    import matplotlib.pyplot as plt
-    nx.draw(graph)
-    plt.draw()
-    plt.show()
+    # import matplotlib.pyplot as plt
+    # nx.draw(graph)
+    # plt.draw()
+    # plt.show()
+    betas = var[:int(len(var)/2)]
+    gammas = var[int(len(var)/2):]
 
-    steps = 10
-    betas = np.random.uniform(0, np.pi*2, steps)
-    gammas = np.random.uniform(0, np.pi*2, steps)
-
-    for n_step in range(steps):
+    for n_step in range(len(betas)):
 
         # Run Driver Hamiltonian
         for i in range(n_features):
@@ -116,10 +113,10 @@ def qaoa(var):
 
                 # We to hit the quantum state with the product of the exponential of the Hamiltonian Cost
                 if i!=j:
-                    qml.QubitUnitary(np.e**(H1 * -1j * betas[n_step]), wires=[i, j])
+                    qml.QubitUnitary(np.e**(H1 * -1j * betas[n_step].val), wires=[i, j])
 
         # Run Mixer Hamiltonian
-        for q in range(n_features): qml.RX(betas[n_step], wires=q)
+        for q in range(n_features): qml.RX(gammas[n_step], wires=q)
 
     return [qml.expval.PauliZ(n) for n in range(n_features)]
 
@@ -127,4 +124,14 @@ def qaoa(var):
 def cost(var):
     return sum(qaoa(var))
 
-print(qaoa(var))
+
+opt = GradientDescentOptimizer(0.1)
+
+steps = 2 # QAOA Steps
+var = np.random.uniform(0, np.pi*2, steps)
+var_gd = [var]
+for it in range(20):
+    var = opt.step(cost, var)
+    var_gd.append(var)
+
+print("Found Beta and Gammas", var_gd)
