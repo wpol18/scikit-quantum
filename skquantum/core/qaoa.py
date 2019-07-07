@@ -1,4 +1,5 @@
 import pennylane as qml
+import itertools
 
 from pennylane.optimize import GradientDescentOptimizer
 from pennylane import numpy as np
@@ -12,6 +13,7 @@ class QAOA():
     def fit(self, H1):
 
         n_features = len(H1)
+        import pdb; pdb.set_trace()
 
         self.dev = qml.device('projectq.simulator', wires=n_features)
         @qml.qnode(self.dev)
@@ -53,12 +55,8 @@ class QAOA():
             for n_step in range(len(betas)):
 
                 # Run Driver Hamiltonian
-                for i in range(n_features):
-                    for j in range(n_features):
-
-                        # We to hit the quantum state with the product of the exponential of the Hamiltonian Cost
-                        if i!=j:
-                            qml.QubitUnitary(np.e**(H1 * -1j * betas[n_step].val), wires=[i, j])
+                for n, wires in enumerate(list(itertools.combinations(range(int(n_features)), int(n_features ** 1/2) ))):
+                    qml.QubitUnitary(np.e**(H1 * -1j * betas[n_step].val), wires=wires)
 
                 # Run Mixer Hamiltonian
                 for q in range(n_features): qml.RX(gammas[n_step], wires=q)
