@@ -9,12 +9,11 @@ from pennylane import numpy as np
 from scipy.stats import unitary_group
 import networkx as nx
 
-n_features = 2
+n_features = 4
 num_layers = 1
 var = 0.05 * np.random.randn(num_layers, n_features*7)
 
 dev = qml.device('projectq.simulator', wires=n_features)
-
 
 import numpy as np
 
@@ -50,7 +49,10 @@ print(hamiltonian())
 
 
 def generate_random_unitary():
-    random_U = unitary_group.rvs(n_features) # random_U = unitary_group.rvs(2**n_features)
+    if False:
+        random_U = unitary_group.rvs(n_features)
+    else:
+        random_U = unitary_group.rvs(2**n_features)
     # Normalize to form unitary
     random_U = random_U / (np.linalg.det(random_U) ** (1/(2**n_features)))
     return random_U
@@ -75,16 +77,37 @@ def qaoa(var):
     # The hamiltonian a hermitian operator. It is not a quantum gate.
     # A hermitian must be exponentiated to be a unitary. Unitaries are quantum gates.
 
-    H0, H1 = hamiltonian()
+    # H0, H1 = hamiltonian()
+    # H0 = sum([qml.PauliX(i) for i in range(n_features)])
 
     # The number of nodes in the graph must equal the number of qubits
-    graph = nx.gnp_random_graph(n_features, 0.5)
-    H1 = graph_cuts(graph)
+    # graph = nx.gnp_random_graph(n_features, 0.5)
 
-    J = np.array([[0,1],[0,0]])
+    import random 
+
+    graph = nx.Graph()
+    for i in range(n_features):
+        for j in range(n_features):
+            graph.add_edge(i, j, weight=random.random())
+
+    H1 = graph_cuts(graph)
+    H1 = np.matrix(H1.reshape(n_features, n_features).T)
+    H1 = np.asarray(H1)
+
+    # H1 = graph_cuts(graph)
+
+    ddd = generate_random_unitary()
+
+    import pdb; pdb.set_trace()
+    import matplotlib.pyplot as plt
+    nx.draw(graph)
+    plt.draw()
+    plt.show()
+
     steps = 10
     betas = np.random.uniform(0, np.pi*2, steps)
     gammas = np.random.uniform(0, np.pi*2, steps)
+
     for n_step in range(steps):
 
         # Run Driver Hamiltonian
@@ -93,13 +116,15 @@ def qaoa(var):
 
                 # We to hit the quantum state with the product of the exponential of the Hamiltonian Cost
                 if i!=j:
-                    qml.QubitUnitary(np.e**H0, wires=[i, j])
+                    qml.QubitUnitary(np.e**(H1 * -1j * betas[n_step]), wires=[i, j])
 
         # Run Mixer Hamiltonian
-        for i in range(n_features):
-            qml.QubitUnitary(np.e**H1, wires=[i])
+        for q in range(n_features): qml.RX(betas[n_step], wires=q)
 
-    print("saddas")
-    return qml.expval.PauliX(0)
+    return [qml.expval.PauliZ(n) for n in range(n_features)]
+
+
+def cost(var):
+    return sum(qaoa(var))
 
 print(qaoa(var))
