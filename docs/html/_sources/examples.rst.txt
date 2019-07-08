@@ -6,14 +6,6 @@ Examples
 
 We developed scikit-quantum using a simple API inspired by scikit-learn. If you want a specific example, feel free to file an issue.
 
-Combinatorial
-=========================================================================
-
-.. toctree::
-	:maxdepth: 2
-
-	examples/examples_combinatorial_weighted_maxcut.rst
-
 Machine Learning
 =========================================================================
 
@@ -29,3 +21,11 @@ Search
 	:maxdepth: 2
 
 	examples/examples_search_ksat_solver.rst
+
+Combinatorial
+=========================================================================
+
+.. toctree::
+	:maxdepth: 2
+
+	examples/examples_combinatorial_weighted_maxcut.rst

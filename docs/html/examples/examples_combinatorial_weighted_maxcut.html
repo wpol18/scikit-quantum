@@ -14,8 +14,7 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Solve the XOR problem with a Quantum Multi-Layer Perceptron" href="examples_machine_learning_solving_xor_with_quantum_mlp.html" />
-    <link rel="prev" title="Examples" href="../examples.html" />
+    <link rel="prev" title="Solve the Satisfiability Clause with Grover’s" href="examples_search_ksat_solver.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -39,7 +38,7 @@ which says that we can start with a system at the global minimum of an easy opti
 and if we evolve it to another problem, it will be in the global optima of the second problem.
 It’s not hard to see that this is a powerful law of nature that can be harnessed to solve a wide range of computationl problems.</p>
 <p>In this example, we solve the weighted max cut problem on a random networkx graph.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">skquantum.combinatorial</span> <span class="k">import</span> <span class="n">WeightedMaxCut</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">skquantum.combinatorial</span> <span class="k">import</span> <span class="n">QuantumWeightedMaxCut</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 
@@ -50,7 +49,7 @@ It’s not hard to see that this is a powerful law of nature that can be harness
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
         <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
 
-<span class="n">problem</span> <span class="o">=</span> <span class="n">WeightedMaxCut</span><span class="p">()</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">QuantumWeightedMaxCut</span><span class="p">()</span>
 <span class="n">problem</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found Beta and Gammas&quot;</span><span class="p">,</span> <span class="n">problem</span><span class="o">.</span><span class="n">var_gd</span><span class="p">)</span>

@@ -10,7 +10,7 @@ It's not hard to see that this is a powerful law of nature that can be harnessed
 In this example, we solve the weighted max cut problem on a random networkx graph.
 """
 
-from skquantum.combinatorial import WeightedMaxCut
+from skquantum.combinatorial import QuantumWeightedMaxCut
 import random
 import networkx as nx
 
@@ -21,7 +21,7 @@ for i in range(nodes):
     for j in range(nodes):
         graph.add_edge(i, j, weight=random.random())
 
-problem = WeightedMaxCut()
+problem = QuantumWeightedMaxCut()
 problem.fit(graph)
 
 print("Found Beta and Gammas", problem.var_gd)

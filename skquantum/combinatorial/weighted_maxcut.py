@@ -4,7 +4,7 @@ import networkx as nx
 from skquantum.core.qaoa import QAOA
 from qiskit.aqua.translators.ising.max_cut import get_max_cut_qubitops
 
-class WeightedMaxCut():
+class QuantumWeightedMaxCut():
 	def __init__(self):
 		pass
 

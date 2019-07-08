@@ -13,7 +13,7 @@ In this example, we solve the weighted max cut problem on a random networkx grap
 
 
 	
-	from skquantum.combinatorial import WeightedMaxCut
+	from skquantum.combinatorial import QuantumWeightedMaxCut
 	import random
 	import networkx as nx
 	
@@ -24,7 +24,7 @@ In this example, we solve the weighted max cut problem on a random networkx grap
 	    for j in range(nodes):
 	        graph.add_edge(i, j, weight=random.random())
 	
-	problem = WeightedMaxCut()
+	problem = QuantumWeightedMaxCut()
 	problem.fit(graph)
 	
 	print("Found Beta and Gammas", problem.var_gd)
