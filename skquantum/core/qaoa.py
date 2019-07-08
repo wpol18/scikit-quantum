@@ -1,12 +1,13 @@
 import pennylane as qml
 import itertools
+import math
 
 from pennylane.optimize import GradientDescentOptimizer
 from pennylane import numpy as np
 
 
 class QAOA():
-    def __init__(self, gradient_descent_n_iterations=10, qaoa_steps=3):
+    def __init__(self, gradient_descent_n_iterations=3, qaoa_steps=3):
         self.gradient_descent_n_iterations = gradient_descent_n_iterations
         self.qaoa_steps = qaoa_steps
 
@@ -38,7 +39,7 @@ class QAOA():
             for n_step in range(len(betas)):
 
                 # Run Cost Hamiltonian
-                for n, wires in enumerate(list(itertools.combinations(range(int(n_features)), int(n_features ** 0.5) ))):
+                for n, wires in enumerate(list(itertools.combinations(range(int(n_features)), int(math.log(n_features, 2)) ))):
                     qml.QubitUnitary(np.e**(H1 * -1j * betas[n_step].val), wires=wires)
 
                 # Run Mixer Hamiltonian
@@ -58,5 +59,4 @@ class QAOA():
             var = opt.step(cost, var)
             self.var_gd.append(var)
 
-        qaoa(self.var_gd[-1])
-        self.solution = dev.state
+        self.solution = qaoa(self.var_gd[-1])
