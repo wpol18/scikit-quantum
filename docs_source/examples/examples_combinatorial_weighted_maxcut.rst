@@ -12,11 +12,12 @@ In this example, we solve the weighted max cut problem on a random networkx grap
 .. code-block::
 
 
+	
 	from skquantum.combinatorial import WeightedMaxCut
 	import random
 	import networkx as nx
 	
-	nodes = 8
+	nodes = 3
 	
 	graph = nx.Graph()
 	for i in range(nodes):
@@ -27,3 +28,4 @@ In this example, we solve the weighted max cut problem on a random networkx grap
 	problem.fit(graph)
 	
 	print("Found Beta and Gammas", problem.var_gd)
+	print("Found Solution", problem.solution)
