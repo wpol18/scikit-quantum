@@ -9,6 +9,9 @@ It's not hard to see that this is a powerful law of nature that can be harnessed
 
 In this example, we solve the weighted max cut problem on a random networkx graph.
 """
+import sys
+sys.path.append("/Users/mat/Documents/scikit-quantum")
+
 from skquantum.combinatorial import WeightedMaxCut
 import random
 import networkx as nx
@@ -24,3 +27,4 @@ problem = WeightedMaxCut()
 problem.fit(graph)
 
 print("Found Beta and Gammas", problem.var_gd)
+print("Found Beta and Gammas", problem.solution)

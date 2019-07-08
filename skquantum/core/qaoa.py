@@ -12,8 +12,8 @@ class QAOA():
 
     def fit(self, H1):
 
+        # The number of nodes in the graph must equal the number of qubits
         n_features = len(H1)
-        import pdb; pdb.set_trace()
 
         self.dev = qml.device('projectq.simulator', wires=n_features)
         @qml.qnode(self.dev)
@@ -29,33 +29,16 @@ class QAOA():
             # it slow enough.
             # For the theorem to hold, there must be an energy gap between the ground state and the first excited state.
 
-         
-            # expp = np.exp(random_U) / np.exp((np.linalg.det(random_U) ** (1/(2**n_features))))
-
             # The hamiltonian a hermitian operator. It is not a quantum gate.
-            # A hermitian must be exponentiated to be a unitary. Unitaries are quantum gates.
+            # A hermitian must be exponentiated to be a unitary. Unitaries are indeed quantum gates.
 
-            # H0, H1 = hamiltonian()
-            # H0 = sum([qml.PauliX(i) for i in range(n_features)])
-
-            # The number of nodes in the graph must equal the number of qubits
-            # graph = nx.gnp_random_graph(n_features, 0.5)
-
-            # H1 = graph_cuts(graph)
-
-            # import matplotlib.pyplot as plt
-            # nx.draw(graph)
-            # plt.draw()
-            # plt.show()
             betas = var[:int(len(var)/2)]
             gammas = var[int(len(var)/2):]
-            # betas = self.betas
-            # gammas = self.gammas
 
             for n_step in range(len(betas)):
 
-                # Run Driver Hamiltonian
-                for n, wires in enumerate(list(itertools.combinations(range(int(n_features)), int(n_features ** 1/2) ))):
+                # Run Cost Hamiltonian
+                for n, wires in enumerate(list(itertools.combinations(range(int(n_features)), int(n_features ** 0.5) ))):
                     qml.QubitUnitary(np.e**(H1 * -1j * betas[n_step].val), wires=wires)
 
                 # Run Mixer Hamiltonian
@@ -75,3 +58,5 @@ class QAOA():
             var = opt.step(cost, var)
             self.var_gd.append(var)
 
+        qaoa(self.var_gd[-1])
+        self.solution = dev.state
