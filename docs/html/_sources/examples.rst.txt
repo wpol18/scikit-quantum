@@ -13,3 +13,11 @@ Machine Learning
 	:maxdepth: 2
 
 	examples/examples_machine_learning_solving_xor_with_quantum_mlp.rst
+
+Combinatorial
+=========================================================================
+
+.. toctree::
+	:maxdepth: 2
+
+	examples/examples_combinatorial_weighted_maxcut.rst
