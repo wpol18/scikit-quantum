@@ -16,7 +16,7 @@ Given `clauses` below, should expect solution to be [1, 1, 1]
 	'''
 	numpy array that encodes your clause
 	ex. np.array([[1, 1, -1], [1, -1, 1]]) -->
-	(v1 OR v2 OR v3) AND (v1 OR ~v2 OR v3)
+	(v1 OR v2 OR ~v3) AND (v1 OR ~v2 OR v3)
 	'''
 	
 	clauses = np.array([[1, 1, 1], 
