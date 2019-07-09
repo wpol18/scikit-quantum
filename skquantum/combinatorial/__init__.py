@@ -1,1 +1,1 @@
-from .weighted_maxcut import WeightedMaxCut
+from .weighted_maxcut import QuantumWeightedMaxCut
