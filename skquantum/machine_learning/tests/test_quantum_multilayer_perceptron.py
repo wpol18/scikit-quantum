@@ -13,4 +13,4 @@ def test_qmlp_trains_for_a_little_bit():
 
 	assert len(clf.predict(X)) == 4
 
-	assert clf.solution == len(10)
+	assert clf.solution == 10
