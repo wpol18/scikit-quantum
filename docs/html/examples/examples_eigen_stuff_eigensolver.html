@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Solve for the lowest energy eigenvalue of a Hamiltonian with the VQE &#8212; scikit-quantum  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Solve the XOR problem with a Quantum Multi-Layer Perceptron" href="examples_machine_learning_solving_xor_with_quantum_mlp.html" />
+    <link rel="prev" title="Examples" href="../examples.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="solve-for-the-lowest-energy-eigenvalue-of-a-hamiltonian-with-the-vqe">
+<h1>Solve for the lowest energy eigenvalue of a Hamiltonian with the VQE<a class="headerlink" href="#solve-for-the-lowest-energy-eigenvalue-of-a-hamiltonian-with-the-vqe" title="Permalink to this headline">¶</a></h1>
+<p>Variational Quantum Eigensolver (VQE) finds the lowest energy eigenvalue
+for some Hamiltonian, H. VQE relies on the variational principle, which
+says that the expectation value of some observable, H, will always be
+greater than or equal to H’s lowest energy eigenvalue.</p>
+<p>We feed VQE a parameterized quantum state preparation routine (ansatz),
+an initial set of parameters for our ansatz, an optimizer for our
+classical optimization loop to find the best parameter choice for our
+ansatz, and the Hamiltonian whose eigenvalue we wish to find.</p>
+<p>(skquantum’s VQE currently supports <cite>scipy.optimize.minimize</cite> optimizers
+and Pennylane’s built-in <cite>GradientDescentOptimizer</cite>. We can currently specify
+our Hamiltonian using either PyQuil or ProjectQ)</p>
+<p>Given <cite>H_example</cite> below, we expect the solution to be approximately -8</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># imports</span>
+<span class="kn">from</span> <span class="nn">skquantum.core.vqe</span> <span class="k">import</span> <span class="n">VQE</span>
+<span class="kn">from</span> <span class="nn">pennylane.optimize</span> <span class="k">import</span> <span class="n">GradientDescentOptimizer</span>
+<span class="kn">import</span> <span class="nn">pennylane</span> <span class="k">as</span> <span class="nn">qml</span>
+<span class="kn">from</span> <span class="nn">pyquil.paulis</span> <span class="k">import</span> <span class="n">sZ</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+
+<span class="c1"># instantiate Hamiltonian:</span>
+<span class="n">H_example</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">sZ</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">5</span><span class="o">*</span><span class="n">sZ</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="c1"># state preparation function</span>
+<span class="k">def</span> <span class="nf">ansatz_example</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">wire</span><span class="p">):</span>
+    <span class="n">qml</span><span class="o">.</span><span class="n">RX</span><span class="p">(</span><span class="n">var</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wires</span><span class="o">=</span><span class="n">wire</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">qml</span><span class="o">.</span><span class="n">RY</span><span class="p">(</span><span class="n">var</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">wires</span><span class="o">=</span><span class="n">wire</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<span class="c1"># initial parameter choice to feed into ansatz above</span>
+<span class="n">init_angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+
+<span class="c1"># specify which optimizer and kwargs we want to use</span>
+<span class="n">opt</span> <span class="o">=</span> <span class="n">GradientDescentOptimizer</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">gd_steps</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="c1"># instantiate VQE, fit, print solution (should be around -8):</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">VQE</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span> <span class="n">optimizer_kwargs</span><span class="o">=</span><span class="n">gd_steps</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">ansatz</span><span class="o">=</span><span class="n">ansatz_example</span><span class="p">,</span> <span class="n">initial_params</span><span class="o">=</span><span class="n">init_angles</span><span class="p">,</span> <span class="n">H</span><span class="o">=</span><span class="n">H_example</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, scikit-quantum developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/examples/examples_eigen_stuff_eigensolver.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
