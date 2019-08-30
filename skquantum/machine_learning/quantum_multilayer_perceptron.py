@@ -74,6 +74,7 @@ class QuantumMultiLayerPerceptron(sklearn.base.BaseEstimator):
         self._quantum_neural_net = None
         self.n_features = None
         self.var = None
+        self.solution = None
 
 
     def _cost(self, var, features, labels):
@@ -134,5 +135,6 @@ class QuantumMultiLayerPerceptron(sklearn.base.BaseEstimator):
         iterations = self.iterations
         for it in range(iterations):
             self.var = opt.step(lambda v: self._cost(v, X, Y), self.var)
-            if it:
-                print("{:0.2f}% Iter: {:5d} | Cost: {:0.7f} ".format(((it+1)/iterations)*100, it + 1, self._cost(self.var, X, Y)))
+
+        self.solution = self.var
+

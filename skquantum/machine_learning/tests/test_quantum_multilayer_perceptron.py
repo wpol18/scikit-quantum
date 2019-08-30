@@ -12,3 +12,5 @@ def test_qmlp_trains_for_a_little_bit():
 	clf.fit(X, Y)
 
 	assert len(clf.predict(X)) == 4
+
+	assert clf.solution.shape == (1, 21)
