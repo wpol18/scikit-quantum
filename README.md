@@ -1,3 +1,4 @@
+[![Board Status](https://dev.azure.com/matkallada/833af0e0-daeb-435e-b22b-c6e157692e13/c182d7d2-88f9-411a-abfc-2ca79e11ba5d/_apis/work/boardbadge/eb4d3f2e-ffe0-4d9b-81ca-f5e281c52ad1)](https://dev.azure.com/matkallada/833af0e0-daeb-435e-b22b-c6e157692e13/_boards/board/t/c182d7d2-88f9-411a-abfc-2ca79e11ba5d/Microsoft.RequirementCategory)
 
 ![scikit-quantum logo](https://scikit-quantum.com/html/_static/logo.png)
 
